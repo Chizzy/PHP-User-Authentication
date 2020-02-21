@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/functions_tasks.php';
 require_once __DIR__ . '/functions_user.php';
+require_once __DIR__ . '/functions_auth.php';
 
 try {
     $db = new PDO("sqlite:".__DIR__."/todo.db");

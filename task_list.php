@@ -1,5 +1,7 @@
 <?php
+
 require 'inc/bootstrap.php';
+requireAuth();
 
 $pageTitle = "Task List | Time Tracker";
 $page = "tasks";
@@ -67,4 +69,4 @@ include 'inc/header.php';
         </div>
     </div>
 
-<?php include("inc/footer.php"); ?>
+<?php include 'inc/footer.php'; ?>
