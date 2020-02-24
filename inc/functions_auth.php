@@ -15,6 +15,12 @@ function requireAuth()
     }
 }
 
+function getAuthenticatedUser()
+{
+    global $session;
+    return findUserById($session->get('auth_user_id'));
+}
+
 function saveUserSession($user)
 {
     global $session;
