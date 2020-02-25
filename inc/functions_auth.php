@@ -15,6 +15,15 @@ function requireAuth()
     }
 }
 
+function isOwner($owner_id)
+{
+    if (!isAuthenticated()) {
+        return false;
+    }
+    global $session;
+    return $owner_id == $session->get('auth_user_id');
+}
+
 function getAuthenticatedUser()
 {
     global $session;
