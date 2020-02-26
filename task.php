@@ -7,7 +7,12 @@ $pageTitle = "Task | Time Tracker";
 $page = "task";
 
 if (request()->get('id')) {
-    list($task_id, $task, $status) = getTask(request()->get('id'));
+    list($task_id, $task, $status, $user_id) = getTask(request()->get('id'));
+
+    if (!isOwner($user_id)) {
+        $session->getFlashBag()->add('error', 'Not Authorized');
+        redirect('/task_list.php');
+    }
 }
 
 include 'inc/header.php';
@@ -32,7 +37,7 @@ include 'inc/header.php';
                 <table>
                     <tr>
                         <th><label for="task">Task<span class="required">*</span></label></th>
-                        <td><input type="text" id="task" name="task" value="<?php echo htmlspecialchars($task); ?>" /></td>
+                        <td><input type="text" id="task" name="task" value="<?php if (isset($task)) { echo htmlspecialchars($task); } ?>" /></td>
                     </tr>
                    </table>
                 <?php
