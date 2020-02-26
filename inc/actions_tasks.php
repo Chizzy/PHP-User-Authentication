@@ -6,6 +6,7 @@ $action = request()->get('action');
 $task_id = request()->get('task_id');
 $task = request()->get('task');
 $status = request()->get('status');
+$user_id = request()->get('user_id');
 
 $url="../task_list.php";
 if (request()->get('filter')) {
@@ -24,7 +25,10 @@ case "add":
     break;
 case "update":
     $data = ['task_id'=>$task_id, 'task'=>$task, 'status'=>$status];
-    if (updateTask($data)) {
+    if (!isOwner($user_id)) {
+        $session->getFlashBag()->add('error', 'Not Authorized');
+        redirect('/task_list.php');
+    } elseif (updateTask($data)) {
         $session->getFlashBag()->add('success', 'Task Updated');
     } else {
         $session->getFlashBag()->add('error', 'Could NOT update task');
@@ -36,7 +40,10 @@ case "status":
     }
     break;
 case "delete":
-    if (deleteTask($task_id)) {
+    if (!isOwner($user_id)) {
+        $session->getFlashBag()->add('error', 'Not Authorized');
+        redirect('/task_list.php');
+    } elseif (deleteTask($task_id)) {
         $session->getFlashBag()->add('success', 'Task Deleted');
     } else {
         $session->getFlashBag()->add('error', 'Could NOT Delete Task');

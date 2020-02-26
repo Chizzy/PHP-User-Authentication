@@ -45,6 +45,7 @@ include 'inc/header.php';
                     echo "<input type='hidden' name='action' value='update' />";
                     echo "<input type='hidden' name='task_id' value='$task_id' />";
                     echo "<input type='hidden' name='status' value='$status' />";
+                    echo "<input type='hidden' name='user_id' value='$user_id' />";
                 } else {
                     echo "<input type='hidden' name='status' value='0' />";
                     echo "<input type='hidden' name='action' value='add' />";
