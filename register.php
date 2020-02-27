@@ -1,6 +1,11 @@
 <?php
 require_once 'inc/bootstrap.php';
 
+if (isAuthenticated()) {
+    $session->getFlashBag()->add('error', 'Already logged in');
+    redirect('/');
+}
+
 $pageTitle = "Register | Time Tracker";
 $page = 'register';
 
