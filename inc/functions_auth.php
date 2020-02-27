@@ -2,8 +2,7 @@
 
 function isAuthenticated()
 {
-    global $session;
-    return $session->get('auth_logged_in', false);
+    return decodeAuthCookie();
 }
 
 function requireAuth()
@@ -20,21 +19,69 @@ function isOwner($owner_id)
     if (!isAuthenticated()) {
         return false;
     }
-    global $session;
-    return $owner_id == $session->get('auth_user_id');
+    return $owner_id == decodeAuthCookie('auth_user_id');
 }
 
 function getAuthenticatedUser()
 {
-    global $session;
-    return findUserById($session->get('auth_user_id'));
+    return findUserById(decodeAuthCookie('auth_user_id'));
 }
 
-function saveUserSession($user)
+function saveUserData($user)
 {
     global $session;
-    $session->set('auth_logged_in', true);
-    $session->set('auth_user_id', (int) $user['id']);
-
     $session->getFlashBag()->add('success', 'Successfully Logged In');
+
+    $expTime = time() + 3600;
+    $jwt = \Firebase\JWT\JWT::encode(
+        [
+            'iss' => request()->getBaseUrl(),
+            'sub' => (int) $user['id'],
+            'exp' => $expTime,
+            'iat' => time(),
+            'nbf' => time()
+        ],
+        getenv("SECRET_KEY"),
+        'HS256'
+    );
+    $cookie = setAuthCookie($jwt, $expTime);
+    redirect('/', ['cookie' => $cookie]);
+}
+
+function setAuthCookie($data, $expTime)
+{
+    $cookie = new \Symfony\Component\HttpFoundation\Cookie(
+        'auth',
+        $data,
+        $expTime,
+        '/',
+        'localhost',
+        false,
+        true
+    );
+    return $cookie;
+}
+
+function decodeAuthCookie($prop = null)
+{
+    try {
+        \Firebase\JWT\JWT::$leeway=1;
+        $cookie = \Firebase\JWT\JWT::decode(
+            request()->cookies->get('auth'),
+            getenv("SECRET_KEY"),
+            ['HS256']
+        );
+    } catch (Exception $e) {
+        return false;
+    }
+    if ($prop === null) {
+        return $cookie;
+    }
+    if ($prop == 'auth_user_id') {
+        $prop = 'sub';
+    }
+    if (!isset($cookie->$prop)) {
+        return false;
+    }
+    return $cookie->$prop;
 }
