@@ -6,7 +6,7 @@ $action = request()->get('action');
 $task_id = request()->get('task_id');
 $task = request()->get('task');
 $status = request()->get('status');
-$user_id = request()->get('user_id');
+$user_id = decodeAuthCookie('auth_user_id');
 
 $url="../task_list.php";
 if (request()->get('filter')) {
